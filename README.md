@@ -1,13 +1,16 @@
-# Sample Hardhat Project
+# Drand DIA oracle testing
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+## Usage
 
-Try running some of the following tasks:
+### To get randomness
 
-```shell
-npx hardhat help
-npx hardhat test
-GAS_REPORT=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
-```
+1. `npm run get-randomness-aurora`
+
+
+### To create your own randomness interface
+
+1. Get some testnet eth from Aurora [here](https://aurora.dev/faucet)
+2. echo 'PRIVATE_KEY=<your-private-key-here>' > .env
+3. `npx hardhat deploy --network auroraTestnet`
+4. `npm run get-randomness-aurora`
+
