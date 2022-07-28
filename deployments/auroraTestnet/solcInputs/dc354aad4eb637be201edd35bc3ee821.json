@@ -1,0 +1,38 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Oracle.sol": {
+      "content": "pragma solidity ^0.8.0;\n\ncontract DIARandomOracle {\n\n  struct Random { \n    string randomness;\n    string signature;\n    string previousSignature;\n  }\n\n  mapping (uint256 => Random) public values;\n  uint256 public lastRound = 0;\n\n  address public oracleUpdater;\n\n  event OracleUpdate(string key, uint128 value, uint128 timestamp);\n  event UpdaterAddressChange(address newUpdater);\n\n  constructor() {\n    oracleUpdater = msg.sender;\n  }\n\n  function setRandomValue(uint256 _round, string memory _randomness, string memory _signature, string memory _previousSignature) public {\n    require(msg.sender == oracleUpdater,\"not a updater\");\n    require(lastRound<_round, \"old round\");\n    lastRound = _round;\n    values[_round] = Random(_randomness, _signature, _previousSignature);\n  }\n\n  function getValue(uint256 _round) external view returns (Random memory) {\n    return values[_round];\n  }\n\n  function updateOracleUpdaterAddress(address newOracleUpdaterAddress) public {\n    require(msg.sender == oracleUpdater,\"not a updater\");\n    oracleUpdater = newOracleUpdaterAddress;\n    emit UpdaterAddressChange(newOracleUpdaterAddress);\n  }\n\n  function getRandomValueFromRound(uint256 _round) external view returns (string memory) {\n    return values[_round].randomness;\n  }\n\n  function getRandomValueFromRoundWithSignature(uint256 _round) external view returns (Random memory) {\n    return values[_round];\n  }\n\n  function getLastRound() public view returns(uint256) {\n    return lastRound;\n  }\n}\n\n"
+    },
+    "contracts/UseOracle.sol": {
+      "content": "pragma solidity ^0.8.0;\n\nimport \"./Oracle.sol\";\n\ncontract UseOracle {\n  address public randomOracle;\n  \n  constructor(address oracle) {\n    randomOracle = oracle;\n  }\n\n  function getLatestRound() public view returns(uint256) {\n      return DIARandomOracle(randomOracle).lastRound();\n  }\n\n  function getLatestRandomValue() public view returns (string memory) {\n    DIARandomOracle Oracle = DIARandomOracle(randomOracle);\n    return Oracle.getRandomValueFromRound(Oracle.lastRound());\n  }\n}"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
